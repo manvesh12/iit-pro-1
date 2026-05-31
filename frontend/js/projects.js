@@ -183,9 +183,13 @@ function newProjectModal() {
 
 async function saveProjectsBackend() {
   try {
+    const token = localStorage.getItem('dsr_token');
     await fetch('http://localhost:8081/api/projects', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
       body: JSON.stringify(S.projects)
     });
   } catch (err) {

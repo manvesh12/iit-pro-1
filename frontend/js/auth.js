@@ -41,17 +41,50 @@ function toggleSignUp(show) {
   }
 }
 
-function doLogin() {
+async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass = document.getElementById('login-pass').value;
-  const role = document.getElementById('login-role').value;
   const err = document.getElementById('login-error');
-  if (!email || !pass) { err.style.display='block'; err.textContent='Please fill all fields.'; return; }
-  err.style.display='none';
-  S.user = { name: email.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase()), email, role };
-  S.role = role;
-  if (role==='authority') showAuthorityScreen();
-  else showAppScreen();
+  
+  if (!email || !pass) { 
+    err.style.display = 'block'; 
+    err.textContent = 'Please fill all fields.'; 
+    return; 
+  }
+  
+  err.style.display = 'none';
+
+  try {
+    const response = await fetch('http://localhost:8081/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: email, password: pass })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      S.token = data.token;
+      localStorage.setItem('dsr_token', data.token);
+      
+      S.user = { 
+        id: data.id,
+        name: data.username.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase()), 
+        email: data.username, 
+        role: data.role 
+      };
+      S.role = data.role.toLowerCase();
+      
+      if (S.role === 'authority') showAuthorityScreen();
+      else showAppScreen();
+    } else {
+      err.style.display = 'block'; 
+      err.textContent = 'Invalid credentials. Please try again.';
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    err.style.display = 'block'; 
+    err.textContent = 'Could not connect to the server.';
+  }
 }
 
 function doAuthorityVerify() {
@@ -83,20 +116,57 @@ function togglePinReveal() {
   }
 }
 
-function doSignup() {
+async function doSignup() {
   const name = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const pass = document.getElementById('signup-pass').value;
+  const role = document.getElementById('signup-role').value;
   const err = document.getElementById('signup-error');
   const ok = document.getElementById('signup-success');
-  if (!name||!email||!pass) { err.style.display='block'; err.textContent='Please fill all required fields.'; return; }
-  if (pass.length<6) { err.style.display='block'; err.textContent='Password must be at least 6 characters.'; return; }
-  err.style.display='none'; ok.style.display='block'; ok.textContent='Account created! You can now log in.';
-  setTimeout(()=>switchAuthMode('faculty'),1500);
+  
+  if (!name || !email || !pass) { 
+    err.style.display = 'block'; 
+    err.textContent = 'Please fill all required fields.'; 
+    return; 
+  }
+  if (pass.length < 6) { 
+    err.style.display = 'block'; 
+    err.textContent = 'Password must be at least 6 characters.'; 
+    return; 
+  }
+  
+  err.style.display = 'none'; 
+  ok.style.display = 'none';
+
+  try {
+    const response = await fetch('http://localhost:8081/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: email, password: pass, role: role })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      ok.style.display = 'block'; 
+      ok.textContent = 'Account created! You can now log in.';
+      setTimeout(() => switchAuthMode('faculty'), 1500);
+    } else {
+      err.style.display = 'block'; 
+      err.textContent = data.message || 'Registration failed.';
+    }
+  } catch (error) {
+    console.error('Signup error:', error);
+    err.style.display = 'block'; 
+    err.textContent = 'Could not connect to the server.';
+  }
 }
 
 function doLogout() {
-  S.user=null; S.role='user';
+  S.user = null; 
+  S.role = 'user';
+  S.token = null;
+  localStorage.removeItem('dsr_token');
   viewHistory = [];
   currentViewId = 'dashboard';
   const backBtn = document.getElementById('tb-back-btn');

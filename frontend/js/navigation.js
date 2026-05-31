@@ -49,7 +49,12 @@ window.addEventListener('popstate', (event) => {
 
 async function initApp() {
   try {
-    const res = await fetch('http://localhost:8081/api/projects');
+    const token = localStorage.getItem('dsr_token');
+    const res = await fetch('http://localhost:8081/api/projects', {
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : ''
+      }
+    });
     S.projects = await res.json();
   } catch (err) {
     console.error('Failed to load projects from backend:', err);
