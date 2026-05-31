@@ -1,0 +1,126 @@
+<!-- ═══════════════════════════════════════════════════════════════
+     SCREEN 1 — AUTH
+ ═══════════════════════════════════════════════════════════════ -->
+<div class="iit-emblem">
+
+    <img src="../logo/IITRPR.JPEG"
+         alt="IIT Ropar Logo"
+         class="iit-logo-img">
+
+    <div class="emblem-info">
+        <h1>Indian Institute of Technology Ropar</h1>
+        <p>GOVERNMENT OF INDIA</p>
+    </div>
+
+</div>
+        <div class="auth-title">Enterprise<br><em style="color:#2563eb; font-style:normal;">Resource Planning</em><br>Platform</div>
+        <div class="auth-desc">Secure, unified gateway for faculty, administration, and government authorities to manage internal operations.</div>
+        <div class="auth-pills">
+          <div class="auth-pill">
+            <div class="pill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 11 2 2 4-4"/>
+              </svg>
+            </div>
+            <div class="auth-pill-text">
+              <strong>Govt. NIC Secured Network</strong>
+              <span>Trusted. Secure. Reliable.</span>
+            </div>
+          </div>
+          <div class="auth-pill">
+            <div class="pill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div class="auth-pill-text">
+              <strong>End-to-End Encrypted Auth</strong>
+              <span>Your data is safe with us.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:32px;">© 2025 Indian Institute of Technology Ropar. All rights reserved.</div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <div id="tab-btn-faculty" class="auth-tab active" onclick="switchAuthMode('faculty')">Faculty / Staff</div>
+        <div id="tab-btn-authority" class="auth-tab" onclick="switchAuthMode('authority')">Govt. Authority</div>
+      </div>
+      
+      <!-- FACULTY / STAFF FORM -->
+      <div id="auth-form-faculty" class="auth-form active">
+        <div class="auth-form-title">Staff Portal</div>
+        <div class="auth-form-sub">Sign in to your DSR Coordinator / Reviewer account</div>
+        <div class="f-field">
+          <label>Email Address</label>
+          <div class="input-wrap">
+            <i data-lucide="mail" style="position:absolute;left:16px;color:var(--text-soft);width:18px;height:18px;"></i>
+            <input id="login-email" type="email" placeholder="officer@punjab.gov.in" value="demo@iitropar.ac.in">
+          </div>
+        </div>
+        <div class="f-field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <i data-lucide="lock" style="position:absolute;left:16px;color:var(--text-soft);width:18px;height:18px;"></i>
+            <input id="login-pass" type="password" placeholder="••••••••" value="password123">
+          </div>
+        </div>
+        <div class="f-field"><label>Login As</label>
+          <select id="login-role">
+            <option value="user">Report Coordinator / Data Entry</option>
+            <option value="reviewer">Section Reviewer</option>
+            <option value="admin">System Administrator</option>
+          </select>
+        </div>
+        <div class="form-err" id="login-error"></div>
+        <button class="btn-primary" onclick="doLogin()">Login to Portal →</button>
+      </div>
+
+      <!-- GOVT AUTHORITY FORM -->
+      <div id="auth-form-authority" class="auth-form">
+        <div class="auth-form-title">Authority Portal</div>
+        <div class="auth-form-sub">Secure access for nodal officers and auditors.</div>
+        
+        <div class="f-field">
+          <label>NIC ID / Authority Token</label>
+          <div class="input-wrap">
+            <i data-lucide="user" style="position:absolute;left:16px;color:var(--text-soft);width:18px;height:18px;"></i>
+            <input id="auth-nic-id" type="text" placeholder="Enter your authorized ID" value="authority-demo">
+          </div>
+        </div>
+        
+        <div class="f-field">
+          <label>Security PIN</label>
+          <div class="input-wrap">
+            <i data-lucide="lock" style="position:absolute;left:16px;color:var(--text-soft);width:18px;height:18px;"></i>
+            <input id="auth-security-pin" type="password" placeholder="••••••" value="123456">
+            <button class="btn-reveal" onclick="togglePinReveal()" type="button" style="position:absolute;right:16px;color:var(--text-soft);background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;">
+              <i data-lucide="eye" style="width:18px;height:18px;"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="auth-options">
+          <label class="cb-container">
+            <input type="checkbox" checked> Remember me
+          </label>
+          <a href="#" class="forgot-link" onclick="toast('Please contact your district administrator to reset your PIN.','info'); return false;">Forgot PIN?</a>
+        </div>
+        
+        <div class="form-err" id="auth-error"></div>
+        <button class="btn-primary" onclick="doAuthorityVerify()" style="background:#0a192f; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <i data-lucide="lock" style="width:16px;height:16px;"></i>
+          Verify & Proceed
+        </button>
+        
+        <div class="nic-banner" style="display:flex; align-items:center; gap:8px; background:var(--primary-lt); color:var(--text-mid); font-size:13px; padding:14px; border-radius:var(--r-md); margin-top:16px; border:1px solid rgba(37,99,235,.12); justify-content:center;">
+          <i data-lucide="shield-check" style="width:16px;height:16px;color:var(--primary);"></i>
+          <span>This portal is protected by <strong>NIC Secured Network</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

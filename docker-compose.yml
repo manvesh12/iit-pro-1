@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: dsr_postgres
+    environment:
+      POSTGRES_USER: dsr_user
+      POSTGRES_PASSWORD: dsr_password
+      POSTGRES_DB: dsr_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: dsr_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # MinIO (S3 Compatible Object Storage)
+  minio:
+    image: minio/minio:latest
+    container_name: dsr_minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000" # API Port
+      - "9001:9001" # Console Port
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+  # MinIO Setup (Automatically creates bucket on startup)
+  createbuckets:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin123;
+      /usr/bin/mc rm -r --force myminio/dsr-pdfs;
+      /usr/bin/mc mb myminio/dsr-pdfs;
+      /usr/bin/mc policy set public myminio/dsr-pdfs;
+      exit 0;
+      "
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
